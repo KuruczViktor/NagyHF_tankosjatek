@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class MyTank {
-    public static final double tankSize = 64;
+    public static final double tankSize = 100;
     private double x;
     private double y;
 
@@ -90,5 +90,13 @@ public class MyTank {
 
     public float getSpeed() {
         return speed;
+    }
+    public boolean check(int width, int height){
+        if(x <= -tankSize ||y < -tankSize || x > width ||y>height){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }

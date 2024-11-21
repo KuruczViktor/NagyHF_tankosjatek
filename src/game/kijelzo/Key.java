@@ -6,6 +6,15 @@ public class Key {
     private boolean key_space;
     private boolean key_j;
     private boolean key_k;
+    private boolean goForWard;
+
+    public boolean isgoForWard(){
+        return goForWard;
+    }
+
+    public void setGoForWard(boolean goForWard){
+        this.goForWard = goForWard;
+    }
 
     public boolean isTurnLeftkey() {
         return turnLeftkey;
