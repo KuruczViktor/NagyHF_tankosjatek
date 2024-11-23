@@ -176,7 +176,7 @@ public class Kijelzo extends JComponent {
                         ShotsTime++;
                         if (ShotsTime >= 30) {
                             if (key.isKey_j()) {
-                                bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 4, 3f));
+                                bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 7, 3f));
                             } else {
                                 bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 20, 3f));
                             }
@@ -196,12 +196,12 @@ public class Kijelzo extends JComponent {
                     }
                     mytank.move();
                     mytank.changeAngle(angle);
-
+/*
                     if (!mytank.check(width, height)) {
                         System.out.println("Game Over! The tank left the screen.");
                         stopGame(); // Megállítja a játékot
                         break; // Kilép a szálból
-                    }
+                    }*/
 
                     for(int i=0;i<enemies.size();i++){
                         Enemy enemy = enemies.get(i);
@@ -210,6 +210,10 @@ public class Kijelzo extends JComponent {
                             if(!enemy.check(width,height)){
                                 enemies.remove(enemy);
                                 System.out.println("1 enemy wasn't killed! Get better.");
+                            }else {
+                                if(mytank.isAlive()){
+                                    checkMyTank(enemy);
+                                }
                             }
                         }
                     }
@@ -226,7 +230,10 @@ public class Kijelzo extends JComponent {
     }
 
     private void drawGame(){
-        mytank.draw(g2d);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if(mytank.isAlive()){
+            mytank.draw(g2d);
+        }
         for(int i=0;i<bullets.size();i++){
             Bullets bullet = bullets.get(i);
             if(bullet!=null){
@@ -281,11 +288,34 @@ public class Kijelzo extends JComponent {
                 Area area = new Area(bullet.getShape());
                 area.intersect(enemy.getEnemyShape());
                 if(!area.isEmpty()){
-                    enemies.remove(enemy);
+                    if(!enemy.updateHP(bullet.getSize())){
+                        enemies.remove(enemy);
+                    }
+
                     bullets.remove(bullet);
+
+
                 }
             }
         }
 
+    }
+
+    public void checkMyTank(Enemy enemy){
+            if(enemy!=null){
+                Area area = new Area(mytank.getMyTanksShape());
+                area.intersect(enemy.getEnemyShape());
+                if(!area.isEmpty()) {
+                    System.out.println("talalkozott");
+                    if(!enemy.updateHP(mytank.getHP())) {
+                        enemies.remove(enemy);
+                        System.out.println("torolte");
+                    }
+                    if(!mytank.updateHP(10)) {
+                        mytank.setAlive(false);
+                        System.out.println("setAlive false lett");
+                    }
+                }
+            }
     }
 }

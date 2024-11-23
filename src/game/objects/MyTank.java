@@ -3,11 +3,16 @@ package game.objects;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
 
-public class MyTank {
+public class MyTank extends RenderHP{
     public static final double tankSize = 100;
     private double x;
     private double y;
+
+
+    private boolean IsAlive;
 
     private final float boost_max = 1f;
     private float speed = 0f;
@@ -16,9 +21,25 @@ public class MyTank {
     private float angle=0f;
     private final Image image;
     private final Image image_spedup;
+    private final Area MyTanksShape;
+
+
     public MyTank() {
+        super(new HealPoints(40,50));
+        setAlive(true);
         this.image = new ImageIcon(getClass().getResource("/game/images/tank.png")).getImage();
         this.image_spedup = new ImageIcon(getClass().getResource("/game/images/tankspedup.png")).getImage();
+        Path2D p = new Path2D.Double();
+        double halfSize = tankSize / 2;
+        double offsetX = -halfSize + halfSize;
+        double offsetY = -halfSize + halfSize;
+
+// Négyzet definiálása
+        p.moveTo(offsetX, offsetY);                    // Bal felső sarok
+        p.lineTo(offsetX + tankSize, offsetY);             // Jobb felső sarok
+        p.lineTo(offsetX + tankSize, offsetY + tankSize);      // Jobb alsó sarok
+        p.lineTo(offsetX, offsetY + tankSize);
+        MyTanksShape = new Area(p);
     }
 
     public void draw(Graphics2D g2d){
@@ -26,8 +47,7 @@ public class MyTank {
         AffineTransform transform = new AffineTransform();
         g2d.translate(x,y);
         transform.rotate(Math.toRadians(angle+90), tankSize / 2, tankSize / 2);
-
-
+        renderhp(g2d,getMyTanksShape(),y);
         g2d.drawImage(isSpedUp ? image_spedup : image,transform,null);
         g2d.setTransform(old);
     }
@@ -91,6 +111,7 @@ public class MyTank {
     public float getSpeed() {
         return speed;
     }
+
     public boolean check(int width, int height){
         if(x <= -tankSize ||y < -tankSize || x > width ||y>height){
             return false;
@@ -98,5 +119,21 @@ public class MyTank {
         else{
             return true;
         }
+    }
+
+    public Area getMyTanksShape(){
+        AffineTransform tf = new AffineTransform();
+        tf.translate(x,y);
+        tf.rotate(Math.toRadians(angle),tankSize/2,tankSize/2);
+        return new Area(tf.createTransformedShape(MyTanksShape));
+    }
+
+    public boolean isAlive() {
+       return IsAlive;
+    }
+
+
+    public void setAlive(boolean alive) {
+        IsAlive = alive;
     }
 }

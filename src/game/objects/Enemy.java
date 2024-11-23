@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 
-public class Enemy {
+public class Enemy extends RenderHP{
 
     public static final double enemysize = 50;
     private double x;
@@ -19,9 +19,11 @@ public class Enemy {
     private final Area enemyShape;
 
     public Enemy(){
+        super(new HealPoints(20,20));
+
         this.image = new ImageIcon(getClass().getResource("/game/images/enemy.png")).getImage();
         Path2D p = new Path2D.Double();
-        double halfSize = size / 2;
+        double halfSize = size/2;
         double offsetX = -halfSize + halfSize;
         double offsetY = -halfSize + halfSize;
 
@@ -82,10 +84,11 @@ public class Enemy {
         tran.rotate(Math.toRadians(angle + 90), enemysize / 2, enemysize / 2);
         g2d.drawImage(image, tran, null);
         Shape shape = getEnemyShape();
-        g2d.setTransform(old);
-        // Körvonal kirajzolása piros színnel
+        renderhp(g2d,shape,y);
+        g2d.setTransform(old);/*
+
         g2d.setColor(Color.RED);
-        g2d.draw(shape);              // Körvonalat rajzolunk
+        g2d.draw(shape);    */          // Körvonalat rajzolunk
 
         // Eredeti transformáció visszaállítása
 
