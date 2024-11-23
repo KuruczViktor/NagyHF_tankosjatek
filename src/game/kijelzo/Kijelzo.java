@@ -17,8 +17,6 @@ import java.util.Random;
 
 public class Kijelzo extends JComponent {
 
-
-
     private Graphics2D g2d;
     private BufferedImage image;
     private int height;
@@ -29,6 +27,9 @@ public class Kijelzo extends JComponent {
     private int ShotsTime;
     private ArrayList<Bullets> bullets;
     private ArrayList<Enemy> enemies;
+    private int score=0;
+    private TopScoreManager topScoreManager;
+    private TopScore topScore;
 
     //FPS
     private final int fps = 60;
@@ -41,6 +42,8 @@ public class Kijelzo extends JComponent {
     public void start(){
         width=getWidth();
         height=getHeight();
+        topScoreManager = new TopScoreManager("topscore.txt");
+        topScore = topScoreManager.loadTopScore();
         image = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB); //INT: Minden pixel egy int (32 bit) típusú számként tárolódik.
         //A = atlatszosag, RGB = szinek
         g2d = image.createGraphics();
@@ -164,38 +167,45 @@ public class Kijelzo extends JComponent {
             public void run() {
                 float c = 0.5f;
                 while(start){
-                    float angle = mytank.getAngle();
-                    if(key.isTurnLeftkey()) {
-                        angle -= c;
-                    }
+                    if(mytank.isAlive()){
+                        float angle = mytank.getAngle();
+                        if(key.isTurnLeftkey()) {
+                            angle -= c;
+                        }
 
-                    if(key.isTurnRightkey()) {
-                        angle += c;
-                    }
-                    if(key.isKey_j() || key.isKey_k()) {
-                        ShotsTime++;
-                        if (ShotsTime >= 30) {
-                            if (key.isKey_j()) {
-                                bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 7, 3f));
-                            } else {
-                                bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 20, 3f));
+                        if(key.isTurnRightkey()) {
+                            angle += c;
+                        }
+                        if(key.isKey_j() || key.isKey_k()) {
+                            ShotsTime++;
+                            if (ShotsTime >= 30) {
+                                if (key.isKey_j()) {
+                                    bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 7, 3f));
+                                } else {
+                                    bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 20, 3f));
+                                }
+                                ShotsTime = 0;
                             }
-                            ShotsTime = 0;
+
                         }
+                        if (key.isKey_space()) {
+                            mytank.boost();
+                        } else if (key.isgoForWard()) {
+                            // Mozgás folyamatos előre, de boost nélkül
+                            if (mytank.getSpeed() < 0.5f) {
+                                mytank.setSpeed(0.5f); // Minimális sebesség
+                            }
+                        } else {
+                            mytank.BackToNormalSPeed(); // Lassítás, ha nincs gomb nyomva
+                        }
+                        mytank.move();
+                        mytank.changeAngle(angle);
+
+                    }else {
 
                     }
-                    if (key.isKey_space()) {
-                        mytank.boost();
-                    } else if (key.isgoForWard()) {
-                        // Mozgás folyamatos előre, de boost nélkül
-                        if (mytank.getSpeed() < 0.5f) {
-                            mytank.setSpeed(0.5f); // Minimális sebesség
-                        }
-                    } else {
-                        mytank.BackToNormalSPeed(); // Lassítás, ha nincs gomb nyomva
-                    }
-                    mytank.move();
-                    mytank.changeAngle(angle);
+
+
 /*
                     if (!mytank.check(width, height)) {
                         System.out.println("Game Over! The tank left the screen.");
@@ -233,7 +243,31 @@ public class Kijelzo extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if(mytank.isAlive()){
             mytank.draw(g2d);
+        }else{
+            if (score > topScore.getScore()) {
+                topScore.setScore(score);
+                topScoreManager.saveTopScore(topScore);
+            }
+            // Ha a tank halott, kiírjuk a "Game Over" üzenetet
+            g2d.setFont(new Font("Arial", Font.BOLD, 48));
+            g2d.setColor(Color.RED);
+            String gameOverText = "GAME OVER";
+            int textWidth = g2d.getFontMetrics().stringWidth(gameOverText);
+            g2d.drawString(gameOverText, (width - textWidth) / 2, height / 2 - 20);
+
+            g2d.setFont(new Font("Arial", Font.PLAIN, 24));
+            g2d.setColor(Color.WHITE);
+            String subText = "Better luck next time...";
+            int subTextWidth = g2d.getFontMetrics().stringWidth(subText);
+            g2d.drawString(subText, (width - subTextWidth) / 2, height / 2 + 20);
         }
+        g2d.setColor(new Color(0,0,0));
+        g2d.setFont(getFont().deriveFont(Font.ITALIC,16f));
+        g2d.drawString("Score: " + score, 10, 20);
+
+        g2d.setColor(new Color(0,0,0));
+        g2d.setFont(getFont().deriveFont(Font.ITALIC,16f));
+        g2d.drawString("Top Score: " + topScore.getScore(), width - g2d.getFontMetrics().stringWidth("Top Score: " + topScore.getScore()) - 10, 20);
         for(int i=0;i<bullets.size();i++){
             Bullets bullet = bullets.get(i);
             if(bullet!=null){
@@ -290,6 +324,7 @@ public class Kijelzo extends JComponent {
                 if(!area.isEmpty()){
                     if(!enemy.updateHP(bullet.getSize())){
                         enemies.remove(enemy);
+                        score++;
                     }
 
                     bullets.remove(bullet);
