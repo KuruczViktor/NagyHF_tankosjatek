@@ -57,12 +57,6 @@ public class Bullets {
     public double getSize(){
         return size;
     }
-    public double getCenterX(){
-        return x+size/2;
-    }
-    public double getCenterY(){
-        return y+size/2;
-    }
 
     public Shape getShape(){
         return new Area(new Rectangle2D.Double(x,y,size,size));

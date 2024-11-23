@@ -8,10 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,13 +17,27 @@ public class Kijelzo extends JComponent {
 
     private Graphics2D g2d;
     private BufferedImage image;
-    private int height;
-    private int width;
+    private int height = 60;
+    private int width = 60;
     private Thread thread;
     private boolean start = true;
     private Key key;
     private int ShotsTime;
+
+    public ArrayList<Bullets> getBullets() {
+        return bullets;
+    }
+
     private ArrayList<Bullets> bullets;
+
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public void setEnemies(ArrayList<Enemy> enemies) {
+        this.enemies = enemies;
+    }
+
     private ArrayList<Enemy> enemies;
     private int score=0;
     private TopScoreManager topScoreManager;
@@ -36,8 +48,7 @@ public class Kijelzo extends JComponent {
     private final int target_time = 1000000000/fps;
 
 
-
-    private MyTank mytank;
+    public MyTank mytank;
 
     public void start(){
         width=getWidth();
@@ -296,7 +307,7 @@ public class Kijelzo extends JComponent {
         }
     }
 
-    private void newEnemy(){
+    public void newEnemy(){
         Random ran = new Random();
         int locationY= ran.nextInt(height-50);
         Enemy enemy = new Enemy();
