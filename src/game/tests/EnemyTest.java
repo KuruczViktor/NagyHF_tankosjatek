@@ -37,5 +37,15 @@ import static org.junit.jupiter.api.Assertions.*;
             Area shape = enemy.getEnemyShape();
             assertNotNull(shape, "Az alakzat nem lehet null.");
         }
+
+        @Test
+        void testCheckEnemyOutOfLeftBounds() {
+            Enemy enemy = new Enemy();
+            enemy.changeLoc(-100, 50); //kívül esik
+            int width = 100;
+            int height = 100;
+
+            assertFalse(enemy.check(width, height), "Az ellenségnek a bal oldalon kívül kell lennie.");
+        }
     }
 

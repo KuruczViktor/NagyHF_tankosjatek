@@ -12,12 +12,17 @@ public class Main extends JFrame {
         init();
     }
 
+    /**
+     * Inicializálja az alkalmazás főablakát és annak alapvető beállításait.
+     * Beállítja az ablak címét, méretét, pozícióját, valamint hozzáadja a
+     * játék megjelenítéséért felelős komponenst.
+     * Az ablak megnyitásakor elindítja a játék logikáját.
+     */
     public void init() {
         setTitle("Tank Game");
         setSize(1300, 700);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
         Kijelzo kijelzo = new Kijelzo();
         add(kijelzo);
         addWindowListener(new WindowAdapter() {

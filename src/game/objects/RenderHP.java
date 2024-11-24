@@ -10,6 +10,14 @@ public class RenderHP {
         this.hp = hp;
     }
 
+    /**
+     * Kirajzolja az életerőt jelző sávot egy objektumhoz.
+     * Ha az aktuális életerő (hp) nem éri el a maximális értéket, megjeleníti a háttérsávot és a fennmaradó hp-t.
+     *
+     * @param g2d   A grafikai kontextus, amelyet a rajzoláshoz használ.
+     * @param shape Az objektum alakzata, amelyhez a HP tartozik.
+     * @param y     Az eltolás a HP pozicionálásához az objektum felett.
+     */
     protected void renderhp(Graphics2D g2d, Shape shape, double y) {
         if(hp.getHp_now()!=hp.getMax_hf()) {
             double hpY = shape.getBounds().getY() - y;

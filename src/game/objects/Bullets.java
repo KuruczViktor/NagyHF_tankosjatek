@@ -14,7 +14,12 @@ public class Bullets {
     private double size;
     private float speed = 1f;
 
-    //Kilépett-e a játék határaiból
+    /**
+     * Ellenőrzi, kilépett-e a játék határain kívülre.
+     * @param width
+     * @param height
+     * @return false, ha kilépett
+     */
     public boolean check(int width, int height){
         if(x <= -size ||y< -size || x > width ||y>height){
             return false;
@@ -35,11 +40,18 @@ public class Bullets {
         shape = new Rectangle2D.Double(0,0,size,size);
     }
 
+    /**
+     * Frissíti a lövedék pozícióját.
+     */
     public void update(){
         x+=Math.cos(Math.toRadians(angle))*speed;
         y+=Math.sin(Math.toRadians(angle))*speed;
     }
 
+    /**
+     * Megrajzolja a lövedéket.
+     * @param g2d
+     */
     public void draw(Graphics2D g2d){
         AffineTransform oldTrfs = g2d.getTransform();
         g2d.setColor(cl);

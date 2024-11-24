@@ -49,4 +49,6 @@ public class BulletsTest {
         assertEquals(expectedShape.getBounds().getSize(), actualShape.getBounds().getSize(), "A lövedék alakzata tényleg megegyezik az elvárttal.");
     }
 
+
+
 }

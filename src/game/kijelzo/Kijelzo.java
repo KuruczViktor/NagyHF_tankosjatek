@@ -13,32 +13,24 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * A játék grafikus megjelenítéséért és logikájáért felelős osztály.
+ * Ez az osztály kezeli a játék fő ciklusát, a játékobjektumok inicializálását és a felhasználói bemeneteket.
+ */
 public class Kijelzo extends JComponent {
 
     private Graphics2D g2d;
     private BufferedImage image;
-    private int height = 60;
-    private int width = 60;
+    private int height;
+    private int width;
     private Thread thread;
     private boolean start = true;
     private Key key;
     private int ShotsTime;
 
-    public ArrayList<Bullets> getBullets() {
-        return bullets;
-    }
-
     private ArrayList<Bullets> bullets;
-
-    public ArrayList<Enemy> getEnemies() {
-        return enemies;
-    }
-
-    public void setEnemies(ArrayList<Enemy> enemies) {
-        this.enemies = enemies;
-    }
-
     private ArrayList<Enemy> enemies;
+
     private int score=0;
     private TopScoreManager topScoreManager;
     private TopScore topScore;
@@ -47,15 +39,18 @@ public class Kijelzo extends JComponent {
     private final int fps = 60;
     private final int target_time = 1000000000/fps;
 
-
     public MyTank mytank;
 
+    /**
+     * Elindítja a játékot.
+     * Inicializálja az összes szükséges objektumot, és elindítja a fő játékciklust egy új szálban.
+     */
     public void start(){
         width=getWidth();
         height=getHeight();
         topScoreManager = new TopScoreManager("topscore.txt");
         topScore = topScoreManager.loadTopScore();
-        image = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB); //INT: Minden pixel egy int (32 bit) típusú számként tárolódik.
+        image = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB); //Minden pixel egy int típusú számként tárolódik.
         //A = atlatszosag, RGB = szinek
         g2d = image.createGraphics();
 
@@ -83,6 +78,10 @@ public class Kijelzo extends JComponent {
         thread.start();
     }
 
+    /**
+     * Inicializálja a játékobjektumokat, például a tankot és az ellenségeket.
+     * Az ellenségek periodikusan generálódnak külön szálban.
+     */
     private void initObjects(){
         mytank = new MyTank();
         mytank.changeLoc(200,200);
@@ -98,6 +97,10 @@ public class Kijelzo extends JComponent {
         }).start();
     }
 
+    /**
+     * Inicializálja a játékban használt lövedékek listáját és azok frissítési ciklusát.
+     * Gondoskodik arról, hogy a lövedékek animációja és törlése folyamatosan megtörténjen.
+     */
     private void initBullets(){
         bullets = new ArrayList<>();
         new Thread(new Runnable() {
@@ -124,6 +127,10 @@ public class Kijelzo extends JComponent {
         }).start();
     }
 
+    /**
+     * Beállítja a felhasználói bemenet kezelését.
+     * Figyeli a billentyűzet lenyomását és felengedését, és ennek megfelelően állítja be a játék logikáját.
+     */
     private void initKeys(){
         key = new Key();
         requestFocus();
@@ -215,14 +222,11 @@ public class Kijelzo extends JComponent {
                     }else {
 
                     }
-
-
-/*
                     if (!mytank.check(width, height)) {
                         System.out.println("Game Over! The tank left the screen.");
                         stopGame(); // Megállítja a játékot
                         break; // Kilép a szálból
-                    }*/
+                    }
 
                     for(int i=0;i<enemies.size();i++){
                         Enemy enemy = enemies.get(i);
@@ -244,12 +248,18 @@ public class Kijelzo extends JComponent {
         }).start();
     }
 
-
+    /**
+     * Kirajzolja a játék hátterét.
+     */
     private void drawBackground(){
         g2d.setColor(new Color(49, 154, 6));
         g2d.fillRect(0,0,width,height);
     }
 
+    /**
+     * Kirajzolja a játék állapotát.
+     * Tartalmazza a tankot, ellenségeket, lövedékeket és egyéb információkat.
+     */
     private void drawGame(){
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if(mytank.isAlive()){
@@ -293,12 +303,20 @@ public class Kijelzo extends JComponent {
         }
     }
 
+    /**
+     * Megjeleníti a kirajzolt képet a képernyőn.
+     */
     private void render(){
         Graphics gr = getGraphics();
         gr.drawImage(image,0,0,null);
         gr.dispose();
     }
 
+    /**
+     * Kényszerített várakozást végez a megadott ideig.
+     *
+     * @param speed Várakozási idő milliszekundumban.
+     */
     private void sleep(long speed) {
         try {
             Thread.sleep(speed);
@@ -307,6 +325,9 @@ public class Kijelzo extends JComponent {
         }
     }
 
+    /**
+     * Létrehoz egy új ellenséget a képernyő szélén.
+     */
     public void newEnemy(){
         Random ran = new Random();
         int locationY= ran.nextInt(height-50);
@@ -321,11 +342,20 @@ public class Kijelzo extends JComponent {
         enemies.add(secondEnemy);
     }
 
+
+    /**
+     * Megállítja a játékot.
+     */
     private void stopGame() {
         start = false; // Megállítja a fő játékciklust
         thread.interrupt(); // Megszakítja a rajzolási szálat
     }
 
+    /**
+     * Ellenőrzi, hogy a lövedékek eltalálták-e az ellenségeket.
+     *
+     * @param bullet A vizsgált lövedék.
+     */
     public void checkBullets(Bullets bullet){
         for(int i=0;i<enemies.size();i++){
             Enemy enemy = enemies.get(i);
@@ -347,6 +377,11 @@ public class Kijelzo extends JComponent {
 
     }
 
+    /**
+     * Ellenőrzi, hogy az ellenség ütközött-e a játékos tankjával.
+     *
+     * @param enemy Az ellenfél, amelyet ellenőrizni kell.
+     */
     public void checkMyTank(Enemy enemy){
             if(enemy!=null){
                 Area area = new Area(mytank.getMyTanksShape());
