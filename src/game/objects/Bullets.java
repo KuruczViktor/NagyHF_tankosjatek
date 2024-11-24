@@ -16,8 +16,6 @@ public class Bullets {
 
     /**
      * Ellenőrzi, kilépett-e a játék határain kívülre.
-     * @param width
-     * @param height
      * @return false, ha kilépett
      */
     public boolean check(int width, int height){
@@ -29,6 +27,14 @@ public class Bullets {
         }
     }
 
+    /**
+     * Konstruktor.
+     * @param x
+     * @param y
+     * @param angle
+     * @param size
+     * @param speed
+     */
     public Bullets(double x, double y, float angle, double size, float speed) {
         x+=MyTank.tankSize/2-(size/2);
         y+=MyTank.tankSize/2-(size/2);

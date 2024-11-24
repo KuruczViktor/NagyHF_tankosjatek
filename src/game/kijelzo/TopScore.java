@@ -2,8 +2,10 @@ package game.kijelzo;
 
 import java.io.*;
 
+/**
+ * Tárolja a legmagasabb pontszámot a játék története során.
+ */
 public class TopScore implements Serializable {
-    private static final long serialVersionUID = 1L; // Szerializációs azonosító
     private int score;
 
     public TopScore(int score) {

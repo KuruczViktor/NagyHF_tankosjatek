@@ -37,6 +37,7 @@ public class Kijelzo extends JComponent {
 
     //FPS
     private final int fps = 60;
+    //Mennyi időt kell várni 1-1 képkocka között.(FPS-hez kell)
     private final int target_time = 1000000000/fps;
 
     public MyTank mytank;
@@ -67,7 +68,6 @@ public class Kijelzo extends JComponent {
                         long sleep=(target_time-time)/1000000;
                         sleep(sleep);
                     }
-                    /*sleep(target_time);*/
                 }
             }
         }
@@ -91,7 +91,7 @@ public class Kijelzo extends JComponent {
             public void run() {
                 while(start){
                     newEnemy();
-                    sleep(3000);
+                    sleep(2000);
                 }
             }
         }).start();
@@ -185,31 +185,38 @@ public class Kijelzo extends JComponent {
             public void run() {
                 float c = 0.5f;
                 while(start){
-                    if(mytank.isAlive()){
+                    if(mytank.isAlive()) {
                         float angle = mytank.getAngle();
-                        if(key.isTurnLeftkey()) {
+                        if (key.isTurnLeftkey()) {
                             angle -= c;
                         }
 
-                        if(key.isTurnRightkey()) {
+                        if (key.isTurnRightkey()) {
                             angle += c;
                         }
-                        if(key.isKey_j() || key.isKey_k()) {
+
+                        if (key.isKey_j()) {
                             ShotsTime++;
-                            if (ShotsTime >= 30) {
-                                if (key.isKey_j()) {
-                                    bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 7, 3f));
-                                } else {
-                                    bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 20, 3f));
-                                }
+                            if (ShotsTime >= 40) {
+                                bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 7, 3f));
                                 ShotsTime = 0;
                             }
-
                         }
+
+                        if (key.isKey_k()) {
+                            ShotsTime++;
+                            if (ShotsTime >= 60) {
+                                bullets.add(new Bullets(mytank.getX(), mytank.getY(), mytank.getAngle(), 20, 3f));
+                                ShotsTime = 0;
+                            }
+                        }
+
+
+
                         if (key.isKey_space()) {
                             mytank.boost();
                         } else if (key.isgoForWard()) {
-                            // Mozgás folyamatos előre, de boost nélkül
+                            // Mozgás folyamatosan előre, de boost nélkül
                             if (mytank.getSpeed() < 0.5f) {
                                 mytank.setSpeed(0.5f); // Minimális sebesség
                             }
@@ -265,10 +272,12 @@ public class Kijelzo extends JComponent {
         if(mytank.isAlive()){
             mytank.draw(g2d);
         }else{
+            //TopScore mentés
             if (score > topScore.getScore()) {
                 topScore.setScore(score);
                 topScoreManager.saveTopScore(topScore);
             }
+
             // Ha a tank halott, kiírjuk a "Game Over" üzenetet
             g2d.setFont(new Font("Arial", Font.BOLD, 48));
             g2d.setColor(Color.RED);
@@ -282,6 +291,8 @@ public class Kijelzo extends JComponent {
             int subTextWidth = g2d.getFontMetrics().stringWidth(subText);
             g2d.drawString(subText, (width - subTextWidth) / 2, height / 2 + 20);
         }
+
+        //TopScore és Score kiíratása
         g2d.setColor(new Color(0,0,0));
         g2d.setFont(getFont().deriveFont(Font.ITALIC,16f));
         g2d.drawString("Score: " + score, 10, 20);
@@ -289,12 +300,14 @@ public class Kijelzo extends JComponent {
         g2d.setColor(new Color(0,0,0));
         g2d.setFont(getFont().deriveFont(Font.ITALIC,16f));
         g2d.drawString("Top Score: " + topScore.getScore(), width - g2d.getFontMetrics().stringWidth("Top Score: " + topScore.getScore()) - 10, 20);
+
         for(int i=0;i<bullets.size();i++){
             Bullets bullet = bullets.get(i);
             if(bullet!=null){
                 bullet.draw(g2d);
             }
         }
+
         for(int i=0;i<enemies.size();i++){
             Enemy enemy = enemies.get(i);
             if(enemy!=null){
@@ -326,7 +339,7 @@ public class Kijelzo extends JComponent {
     }
 
     /**
-     * Létrehoz egy új ellenséget a képernyő szélén.
+     * Létrehoz két új ellenséget a képernyő szélén.
      */
     public void newEnemy(){
         Random ran = new Random();

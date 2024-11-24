@@ -16,7 +16,7 @@ public class TopScoreManager implements Serializable {
             // Ha a fájl nem létezik, új legjobb pontszámot adunk vissza
             return new TopScore(0);
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Failed to load top score: " + e.getMessage());
+            System.err.println("Nem sikerült a betöltése a topscore-nak: " + e.getMessage());
             return new TopScore(0);
         }
     }
@@ -25,7 +25,7 @@ public class TopScoreManager implements Serializable {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(topScore);
         } catch (IOException e) {
-            System.err.println("Failed to save top score: " + e.getMessage());
+            System.err.println("Nem sikerült elmenteni a topscore-t: " + e.getMessage());
         }
     }
 }

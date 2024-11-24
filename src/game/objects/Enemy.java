@@ -19,29 +19,26 @@ public class Enemy extends RenderHP {
     private final Area enemyShape;
 
     /**
-     * Constructor for Enemy.
-     * Initializes the enemy's properties, including its health, image, and shape.
+     * Konstruktor
+     * Létrehozza az ellenség HP-ját, képét és alakját.
      */
     public Enemy() {
         super(new HealPoints(20, 20));
 
         this.image = new ImageIcon(getClass().getResource("/game/images/enemy.png")).getImage();
-        Path2D p = new Path2D.Double();
-        double halfSize = size / 2;
-        double offsetX = -halfSize + halfSize;
-        double offsetY = -halfSize + halfSize;
 
-        // Define a square shape for the enemy.
-        p.moveTo(offsetX, offsetY);                     // Top-left corner
-        p.lineTo(offsetX + size, offsetY);              // Top-right corner
-        p.lineTo(offsetX + size, offsetY + size);       // Bottom-right corner
-        p.lineTo(offsetX, offsetY + size);              // Bottom-left corner
+        Path2D p = new Path2D.Double();
+        // Négyzetes alak az ellenséghez
+        p.moveTo(0, 0);
+        p.lineTo(size, 0);
+        p.lineTo(size, size);
+        p.lineTo(0, size);
         enemyShape = new Area(p);
     }
 
     /**
-     * Changes the angle of the enemy.
-     * Ensures the angle remains within valid bounds (0-359 degrees).
+     * Megváltoztatja az irányát
+     * Az irány ne legyen 0 és 360 fokon kívül.
      *
      * @param angle New angle in degrees.
      */
@@ -55,10 +52,10 @@ public class Enemy extends RenderHP {
     }
 
     /**
-     * Updates the enemy's location on the screen.
+     * Megváltoztatja a helyzetét.
      *
-     * @param x New X-coordinate.
-     * @param y New Y-coordinate.
+     * @param x koordináta
+     * @param y koordináta
      */
     public void changeLoc(double x, double y) {
         this.x = x;
@@ -66,53 +63,37 @@ public class Enemy extends RenderHP {
     }
 
     /**
-     * Moves the enemy in the direction of its current angle.
+     * Mozgatja az ellenséget.
      */
     public void move() {
         x = x + Math.cos(Math.toRadians(angle)) * speed;
         y = y + Math.sin(Math.toRadians(angle)) * speed;
     }
 
-    /**
-     * Retrieves the enemy's current X-coordinate.
-     *
-     * @return The X-coordinate of the enemy.
-     */
     public double getX() {
         return x;
     }
 
-    /**
-     * Retrieves the enemy's current Y-coordinate.
-     *
-     * @return The Y-coordinate of the enemy.
-     */
     public double getY() {
         return y;
     }
 
-    /**
-     * Retrieves the enemy's current angle of rotation.
-     *
-     * @return The angle of rotation in degrees.
-     */
     public float getAngle() {
         return angle;
     }
 
     /**
-     * Draws the enemy on the screen with the current transformation settings.
+     * Kirajzolja a kijelzőre a megfelelő transzformációkkal.
      *
-     * @param g2d Graphics2D object used for rendering.
+     * @param g2d kirajzoláshoz
      */
     public void draw(Graphics2D g2d) {
-        // Save the original transformation
+        // Eredeti
         AffineTransform old = g2d.getTransform();
 
-        // Set the enemy's position
+        // Pozícióra helyezi
         g2d.translate(x, y);
-
-        // Rotate and draw the enemy's image
+        //Elforgatja és megrajzolja.
         AffineTransform tran = new AffineTransform();
         tran.rotate(Math.toRadians(angle + 90), enemysize / 2, enemysize / 2);
         g2d.drawImage(image, tran, null);
@@ -122,11 +103,9 @@ public class Enemy extends RenderHP {
     }
 
     /**
-     * Checks whether the enemy is within the bounds of the screen.
+     * Képernyőn belül marad-e az ellenség.
      *
-     * @param width  Width of the screen.
-     * @param height Height of the screen.
-     * @return True if the enemy is within bounds, otherwise false.
+     * @return Igaz, ha az ellenség még nem ment kívül a kijelzőn.
      */
     public boolean check(int width, int height) {
         Rectangle size = getEnemyShape().getBounds();
@@ -134,9 +113,9 @@ public class Enemy extends RenderHP {
     }
 
     /**
-     * Retrieves the transformed shape of the enemy based on its current position and angle.
+     * Visszaadja az ellenség alakját.
      *
-     * @return The transformed Area object representing the enemy's shape.
+     * @return Az ellenség alakja.
      */
     public Area getEnemyShape() {
         AffineTransform tf = new AffineTransform();

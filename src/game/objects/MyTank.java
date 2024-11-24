@@ -23,8 +23,8 @@ public class MyTank extends RenderHP {
     private final Area MyTanksShape;
 
     /**
-     * Constructor for MyTank.
-     * Initializes the tank's properties, including its health, images, and shape.
+     * Konstruktor.
+     * a tank képét, hp-ját és alakját.
      */
     public MyTank() {
         super(new HealPoints(50, 50));
@@ -32,22 +32,19 @@ public class MyTank extends RenderHP {
         this.image = new ImageIcon(getClass().getResource("/game/images/tank.png")).getImage();
         this.image_spedup = new ImageIcon(getClass().getResource("/game/images/tankspedup.png")).getImage();
         Path2D p = new Path2D.Double();
-        double halfSize = tankSize / 2;
-        double offsetX = -halfSize + halfSize;
-        double offsetY = -halfSize + halfSize;
 
         // Define a square shape for the tank.
-        p.moveTo(offsetX, offsetY);                     // Top-left corner
-        p.lineTo(offsetX + tankSize, offsetY);          // Top-right corner
-        p.lineTo(offsetX + tankSize, offsetY + tankSize); // Bottom-right corner
-        p.lineTo(offsetX, offsetY + tankSize);          // Bottom-left corner
+        p.moveTo(0, 0);
+        p.lineTo(tankSize, 0);
+        p.lineTo(tankSize, tankSize);
+        p.lineTo(0, tankSize);
         MyTanksShape = new Area(p);
     }
 
     /**
-     * Draws the tank on the screen with the current transformation settings.
+     * Kirajzolja a kijelzőre a megfelelő transzformációkkal.
      *
-     * @param g2d Graphics2D object used for rendering.
+     * @param g2d kirajzoláshoz
      */
     public void draw(Graphics2D g2d) {
         AffineTransform old = g2d.getTransform();
@@ -60,8 +57,8 @@ public class MyTank extends RenderHP {
     }
 
     /**
-     * Changes the angle of the tank.
-     * Ensures the angle remains within valid bounds (0-359 degrees).
+     * Megváltoztatja az irányát
+     * Az irány ne legyen 0 és 360 fokon kívül.
      *
      * @param angle New angle in degrees.
      */
@@ -76,10 +73,10 @@ public class MyTank extends RenderHP {
     }
 
     /**
-     * Updates the tank's location on the screen.
+     * Beállítja a játékos helyzetét.
      *
-     * @param x New X-coordinate.
-     * @param y New Y-coordinate.
+     * @param x koordináta
+     * @param y koordináta
      */
     public void changeLoc(double x, double y) {
         this.x = x;
@@ -87,8 +84,8 @@ public class MyTank extends RenderHP {
     }
 
     /**
-     * Activates the tank's boost mode, increasing its speed.
-     * Caps the speed at the maximum boost value.
+     * Növeli a tank sebességét, boostol.
+     * Csak egy bizonyos max mennyiségig.
      */
     public void boost() {
         isSpedUp = true;
@@ -100,8 +97,8 @@ public class MyTank extends RenderHP {
     }
 
     /**
-     * Gradually returns the tank's speed to its normal state after boosting.
-     * Prevents the speed from going negative.
+     * A boostolás után visszaállítja az eredeti sebességre.
+     * Nem lehet negatív a sebesség.
      */
     public void BackToNormalSPeed() {
         isSpedUp = false;
@@ -113,7 +110,7 @@ public class MyTank extends RenderHP {
     }
 
     /**
-     * Moves the tank in the direction of its current angle.
+     * Megváltoztatja a helyzetét, mozgatja a játékost.
      */
     public void move() {
         x = x + Math.cos(Math.toRadians(angle)) * speed;
@@ -121,20 +118,18 @@ public class MyTank extends RenderHP {
     }
 
     /**
-     * Checks whether the tank is within the bounds of the screen.
+     * Képernyőn belül marad-e az ellenség.
      *
-     * @param width  Width of the screen.
-     * @param height Height of the screen.
-     * @return True if the tank is within bounds, otherwise false.
+     * @return Igaz, ha az ellenség még nem ment kívül a kijelzőn.
      */
     public boolean check(int width, int height) {
         return !(x <= -tankSize || y < -tankSize || x > width || y > height);
     }
 
     /**
-     * Retrieves the transformed shape of the tank based on its current position and angle.
+     * Visszaadja az ellenség alakját.
      *
-     * @return The transformed Area object representing the tank's shape.
+     * @return Az ellenség alakja.
      */
     public Area getMyTanksShape() {
         AffineTransform tf = new AffineTransform();
